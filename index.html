@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>网站版权归属购买证书</title>
+  <style>
+    body {
+      background-color: #eaeaea;
+      font-family: "仿宋", serif;
+      margin: 0;
+      padding: 50px 20px;
+    }
+    .certificate {
+      background: white;
+      border: 4px double black;
+      padding: 40px;
+      max-width: 900px;
+      margin: auto;
+      box-shadow: 0 0 25px rgba(0,0,0,0.15);
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 40px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+    }
+    p {
+      font-size: 18px;
+      line-height: 1.8;
+      text-align: justify;
+    }
+    .section {
+      margin-top: 30px;
+    }
+    .input-area {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .input-area input {
+      font-size: 18px;
+      padding: 8px 12px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      width: 250px;
+      text-align: center;
+    }
+    .signature-box {
+      margin-top: 50px;
+      text-align: center;
+    }
+    canvas {
+      border: 1px solid #000;
+      background: #fff;
+      touch-action: none;
+    }
+    button {
+      display: block;
+      margin: 30px auto;
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #0078d7;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005bb5;
+    }
+    .footer {
+      margin-top: 60px;
+      text-align: center;
+      font-size: 16px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<div class="input-area">
+  <label>请输入持证人姓名：</label><br>
+  <input type="text" id="nameInput" placeholder="在此输入姓名" oninput="updateName()">
+</div>
+
+<div id="certificate" class="certificate">
+  <h1>网站版权归属与主权声明</h1>
+
+  <p>为确保网络信息主权与知识产权保护，根据数字资源管理与内容分发相关规定，以下网站之内容、设计与其衍生系统已于本日完成版权归属移交，并明确划归为接收方所有，其拥有所有发布权、控制权与解释权：</p>
+
+  <div class="section">
+    <p><strong>一、网站信息</strong><br>
+    · 网站名称：LRED<br>
+    · 内容范畴：计算机网络安全、病毒样本及分析。<br><br>
+    · 网站名称：星空网站<br>
+    · 内容范畴：星空图数据、宇宙星体讲解、图文展示
+    </p>
+  </div>
+
+  <div class="section">
+    <p><strong>二、版权归属条款</strong><br>
+    · 所有图文资料、UI设计及衍生内容已完全归属接收方所有。<br>
+    · 接收方拥有修改、传播、解释与维护之权利。未经授权的使用将视为侵权。</p>
+  </div>
+
+  <div class="section">
+    <p><strong>三、生效与法律效力</strong><br>
+    本证书永久有效，不得撤销。其所述权利具备法律认可之效力。</p>
+  </div>
+
+  <div class="section">
+    <p>证书持有人：<strong id="holderName">（未填写）</strong></p>
+  </div>
+
+  <div class="signature-box">
+    <p>签名区域：</p>
+    <canvas id="signCanvas" width="600" height="150"></canvas>
+    <br>
+    <small>请使用手指或鼠标进行签名</small>
+  </div>
+
+  <div class="footer">
+    文档编号：WS-ZZ-2025-0629-A<br>
+    生效日期：2025年6月29日<br>
+    —— 火狮 HUOSHI 网站 • 证书
+  </div>
+</div>
+
+<button onclick="downloadImage()"> 开始生成并保存证书</button>
+
+<!-- HTML2Canvas for screenshot -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+  // 实时更新姓名
+  function updateName() {
+    const name = document.getElementById("nameInput").value.trim();
+    document.getElementById("holderName").textContent = name || "（未填写）";
+  }
+
+  // 签名功能
+  const canvas = document.getElementById('signCanvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+
+  canvas.addEventListener('mousedown', e => {
+    drawing = true;
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY);
+  });
+
+  canvas.addEventListener('mousemove', e => {
+    if (drawing) {
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
+    }
+  });
+
+  canvas.addEventListener('mouseup', () => drawing = false);
+  canvas.addEventListener('mouseleave', () => drawing = false);
+
+  // 触摸签名
+  canvas.addEventListener("touchstart", function (e) {
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    ctx.beginPath();
+    ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    drawing = true;
+  });
+
+  canvas.addEventListener("touchmove", function (e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    ctx.stroke();
+  });
+
+  canvas.addEventListener("touchend", () => drawing = false);
+
+  // 下载整页证书为图片
+  function downloadImage() {
+    html2canvas(document.getElementById("certificate")).then(canvas => {
+      const link = document.createElement('a');
+      link.download = "网站版权证书.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+  }
+</script>
+
+</body>
+</html>
+  
